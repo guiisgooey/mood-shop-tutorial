@@ -33,3 +33,15 @@ data.forEach(function (data, index) {
     // put new div inside items container
     itemsContainer.appendChild(newDiv)
 })
+
+const cart = []
+function addItem(name, price) {
+    const item = {name: name, price: price, qty: 1}
+    cart.push(item)
+}
+function showItems() {
+    console.log(`you have ${cart.length} items in your cart.`)
+}
+
+addItem('Apple', 0.99)
+showItems()

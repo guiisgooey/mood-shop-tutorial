@@ -100,7 +100,6 @@ function showItems() {
         <button class="add-one" data-name="${name}">+</button>
         <button class="remove-one" data-name="${name}">-</button>
         <input class="update" type="number" data-name="${name}> </input>
-        \n
         </li>`
     }
     itemList.innerHTML = itemStr

@@ -4,6 +4,8 @@ const itemsContainer = document.getElementById('items')
 const itemList = document.getElementById('item-list')
 const cartQty = document.getElementById('cart-qty')
 const cartTotal = document.getElementById("cart-total");
+const itemName = document.getElementById("item-name");
+const itemPrice = document.getElementById("item-price");
 const cart = []
 
 // the length of our data determines how many times this loop goes around
@@ -40,17 +42,45 @@ data.forEach(function (data, index) {
     itemsContainer.appendChild(newDiv)
 })
 
+itemList.onclick = function (e) {
+  console.log("Clicked List")
+  if (e.target && e.target.classList.contains("remove")) {
+    const name = e.target.dataset.name
+    removeItem(name);
+  }
+  else if (e.target && e.target.classList.contains("add-one")) {
+    const name = e.target.dataset.name
+    const price = e.target.dataset.price
+    addItem(name, price);
+  }
+  else if (e.target && e.target.classList.contains("remove-one")) {
+    const name = e.target.dataset.name
+    removeItem(name, 1);
+  }
+
+}
+itemList.onchange = function(e){
+    if(e.target && e.target.classList.contains('update')){
+        const name = e.target.dataset.name
+        const qty = parseInt(e.target.value)
+        updateCart(name, qty)
+
+    }
+}
+
 //Add Item
 function addItem(name, price) {
     for(let i = 0; i < cart.length; i++){
         if(cart[i].name === name){
-            cart[i].qty += 1
+            cart[i].qty++ 
+            showItems()
             return
         }
     }
 
     const item = {name, price, qty: 1}
     cart.push(item)
+    showItems()
 }
 
 //Show items
@@ -60,23 +90,38 @@ function showItems() {
     cartQty.innerHTML = `you have ${qty} items in your cart.`
     
     let itemStr = ''
-    for(let i = 0; i < cart.length; i += 1){
+    for(let i = 0; i < cart.length; i++){
         //console.log(`-${cart[i].name} $${cart[i].price} x ${cart[i].qty}`)
         const {name, price, qty} = cart[i]
-        itemStr += `<li> ${name} $${price} x ${qty} = ${qty * price} </li>`
+
+        itemStr += `<li> 
+        ${name} $${price} x ${qty} = ${qty * price}
+        <button class="remove" data-name="${name}">Remove</button>
+        <button class="add-one" data-name="${name}">+</button>
+        <button class="remove-one" data-name="${name}">-</button>
+        <input class="update" type="number" data-name="${name}> </input>
+        \n
+        </li>`
     }
     itemList.innerHTML = itemStr
 
-    const total = getTotal();
+    const all_items_button = Array.from(document.querySelectorAll("button"))
+    all_items_button.forEach((elt) => elt.addEventListener("click", () => {
+        addItem(elt.getAttribute("id"), elt.getAttribute("data-price"))
+        showItems()
+      })
+    )
+
+    const total = getTotal()
     //console.log(`Total in cart: $${total}`)
-    cartTotal.innerHTML = `Total in cart: $${total}`;
+    cartTotal.innerHTML = `Total in cart: $${total}`
 }
 
 //Get Qty
 function getQty(){
     let qty = 0;
-    for (let i = 0; i < cart.length; i += 1) {
-        qty += cart[i].qty;
+    for (let i = 0; i < cart.length; i++) {
+        qty += cart[i].qty
     }
     return qty
 }
@@ -84,32 +129,42 @@ function getQty(){
 //Get Total
 function getTotal(){
     let total = 0;
-    for (let i = 0; i < cart.length; i += 1) {
-        total += cart[i].price * cart[i].qty;
+    for (let i = 0; i < cart.length; i++) {
+        total += cart[i].price * cart[i].qty
     }
-    return total.toFixed(2);
+    return total.toFixed(2)
 }
 
 //Remove item
 function removeItem(name, qty = 0){
-    for (let i = 0; i < cart.length; i += 1) {
+    for (let i = 0; i < cart.length; i++) {
         if (cart[i].name === name) {
             if(qty > 0){
-                cart[i].qty -= qty  
+                cart[i].qty -= qty
+                showItems()
+                return
             }
             if (cart[i].qty < 1 || qty === 0){
                 cart.splice(i, 1)
+                showItems()
+                return
             }
+        }
+    }
+
+}
+function updateCart(name, qty){
+    for (let i = 0; i < cart.length; i++){
+        if(cart[i].name === name){
+            if(qty<1){
+               removeItem(name, qty)
+               return 
+            }
+            cart[i].qty = qty
+            showItems()
             return
         }
     }
 
 }
-
-addItem('Apple', 0.99)
-addItem('Apple', 0.99)
-addItem('Orange', 2.99)
-showItems()
-removeItem('Apple', 1)
-removeItem('Orange')
 showItems()

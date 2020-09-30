@@ -70,7 +70,7 @@ itemList.onclick = function (e) {
 //function to be called when any changes happen to itemlist
 itemList.onchange = function(e){
     if(e.target && e.target.classList.contains('update')){
-        const name = e.target.dataset.name
+        const name = e.target.getAttribute('name');
         const qty = parseInt(e.target.value)
         updateCart(name, qty)
     }
@@ -109,7 +109,7 @@ function showItems() {
         <button class="remove" data-name="${name}">Remove</button>
         <button class="add-one" data-name="${name}">+</button>
         <button class="remove-one" data-name="${name}">-</button>
-        <input class="update" type="number" data-name="${name}></input>
+        <input class="update" type="number" name="${name}">
         </li>`
     }
     itemList.innerHTML = itemStr
@@ -143,14 +143,12 @@ function removeItem(name, qty = 0){
         if (cart[i].name === name) {
             if(qty > 0){
                 cart[i].qty -= qty
-                showItems()
-                return
             }
-            else if (cart[i].qty < 1 || qty === 0){
+            if (cart[i].qty < 1 || qty === 0){
                 cart.splice(i, 1)
-                showItems()
-                return
             }
+            showItems();
+            return;
         }
     }
 }
